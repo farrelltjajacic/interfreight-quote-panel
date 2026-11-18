@@ -313,6 +313,20 @@ function lineHtml(l, i) {
   </div>`;
 }
 
+const FOLLOW_UP_DAYS = [3, 7, 10, 14];
+function followUpHtml(q) {
+  if (q.Status !== 'Sent' || !q['Sent Date']) return '';
+  const sent = new Date(q['Sent Date']); sent.setHours(0, 0, 0, 0);
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const days = Math.round((today - sent) / 86400000);
+  const next = FOLLOW_UP_DAYS.find((d) => d >= days);
+  const due = FOLLOW_UP_DAYS.includes(days);
+  const nextText = next === undefined ? 'all follow-ups done — update to Accepted or Lost'
+    : due ? `<b>day ${days} follow-up is due today</b>`
+    : `next follow-up on day ${next} (${fmtDate(sent.getTime() + next * 86400000)})`;
+  return `<p class="followup${due ? ' due' : ''}">Sent ${fmtDate(sent.getTime())} · ${days} day${days === 1 ? '' : 's'} ago · ${nextText}</p>`;
+}
+
 function render() {
   const q = state.q;
   const status = q.Status || 'Draft';
@@ -330,6 +344,7 @@ function render() {
     <span class="pill s-${esc(status.toLowerCase())}">${esc(status)}</span>
     ${q['Shipment Job'] ? `<span class="pill s-job">Job ${esc(q['Shipment Job'])}</span>` : ''}
   </div>
+  ${followUpHtml(q)}
 
   <section><h2>Customer</h2><div class="grid">
     ${fieldHtml('Account', 'Account', 'select')}${fieldHtml('Company', 'Company')}
@@ -461,7 +476,12 @@ function bind() {
       addC: () => { addLine('C - Other'); render(); },
       save: () => run(b, () => save()),
       gen: () => run(b, generate),
-      sent: () => run(b, async () => { await setStatus('Sent'); await loadQuotes(); render(); toast('Marked as sent.', 'ok'); }),
+      sent: () => run(b, async () => {
+        const today = new Date(); today.setHours(0, 0, 0, 0);
+        await setStatus('Sent', { 'Sent Date': today.getTime() });
+        await loadQuotes(); render();
+        toast('Marked as sent. Follow-up reminders will come on day 3, 7, 10 and 14.', 'ok');
+      }),
       accept: () => run(b, createJob),
       lost: () => run(b, async () => { await setStatus('Lost'); await loadQuotes(); render(); toast('Marked as lost.'); }),
     };
