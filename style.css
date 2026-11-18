@@ -1,0 +1,103 @@
+:root {
+  --bg: #ffffff; --surface: #f5f6f8; --line: #dee0e3; --text: #1f2329; --muted: #646a73;
+  --accent: #1b2a8c; --accent-text: #ffffff; --orange: #f26b1d; --ok: #1f8a4c; --bad: #c4321c;
+  --input: #ffffff; --focus: #3370ff;
+}
+:root[data-theme="dark"] {
+  --bg: #1a1a1a; --surface: #242424; --line: #3a3a3a; --text: #e8e8e8; --muted: #a0a4ab;
+  --accent: #5b6ef5; --accent-text: #ffffff; --input: #2b2b2b; --focus: #6f8cff;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--text); font: 13px/1.45 -apple-system, "Segoe UI", "PingFang SC", Arial, sans-serif; }
+#app { padding: 12px 16px 80px; container-type: inline-size; max-width: 1100px; margin: 0 auto; }
+h1 { font-size: 18px; margin: 0; }
+h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 8px; }
+section { border-top: 1px solid var(--line); padding: 12px 0; }
+.empty { padding: 40px 8px; text-align: center; color: var(--muted); }
+.empty h1 { color: var(--text); margin-bottom: 8px; }
+
+.top { display: flex; gap: 8px; margin-bottom: 10px; }
+.top select { flex: 1; min-width: 0; }
+.title { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.pill { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--surface); color: var(--muted); border: 1px solid var(--line); }
+.pill.s-review { background: #fff4d6; color: #8a5a00; border-color: #f2d48a; }
+.pill.s-sent { background: #e5ecff; color: #2549c9; border-color: #b9c8ff; }
+.pill.s-accepted, .pill.s-job { background: #e3f6ea; color: #1f8a4c; border-color: #a9dfbd; }
+.pill.s-lost { background: #fde8e4; color: #c4321c; border-color: #f4b8ad; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px 12px; margin-bottom: 8px; }
+.f { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.f span { font-size: 11px; color: var(--muted); }
+input, select, textarea {
+  font: inherit; color: var(--text); background: var(--input); border: 1px solid var(--line); border-radius: 6px;
+  padding: 5px 7px; width: 100%; min-width: 0;
+}
+textarea { resize: vertical; }
+input:focus, select:focus, textarea:focus { outline: 2px solid var(--focus); outline-offset: -1px; border-color: transparent; }
+input[type="number"] { text-align: right; }
+
+button { font: inherit; border-radius: 6px; padding: 6px 12px; cursor: pointer; border: 1px solid var(--line); background: var(--bg); color: var(--text); }
+button:disabled { opacity: .6; cursor: wait; }
+button.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); font-weight: 600; }
+button.green { background: var(--ok); border-color: var(--ok); }
+button.icon { border: 0; background: transparent; color: var(--muted); padding: 4px; }
+button.icon:hover { color: var(--bad); }
+button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* cost sheet: spreadsheet row when wide, wrapped rows when narrow */
+.sheet { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.line {
+  display: grid; gap: 4px; padding: 5px 6px; border-top: 1px solid var(--line); align-items: center;
+  grid-template-columns: 150px minmax(110px, 1.3fr) minmax(90px, 1fr) 64px 58px 64px 92px 104px 96px 104px 26px;
+}
+.line.head { border-top: 0; background: var(--surface); font-size: 11px; color: var(--muted); font-weight: 600; }
+.line .ro { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.line .c-cost, .line .c-sell { text-align: right; }
+.line .c-sell.ro { font-weight: 600; }
+@container (max-width: 860px) {
+  .line.head { display: none; }
+  .line {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) 26px;
+    grid-template-areas:
+      "charge charge charge section del"
+      "ccy qty unit rate rate"
+      "details details price price price"
+      "cost cost sell sell sell";
+  }
+  .c-charge { grid-area: charge; } .c-section { grid-area: section; } .c-del { grid-area: del; }
+  .c-ccy { grid-area: ccy; } .c-qty { grid-area: qty; } .c-unit { grid-area: unit; } .c-rate { grid-area: rate; }
+  .c-details { grid-area: details; } .c-price { grid-area: price; }
+  .c-cost { grid-area: cost; text-align: left !important; } .c-sell { grid-area: sell; }
+  .c-cost.ro::before { content: "Cost "; color: var(--muted); font-weight: 400; }
+  .c-sell.ro::before { content: "Sell "; color: var(--muted); font-weight: 400; }
+  .line:nth-child(even) { background: var(--surface); }
+}
+.row-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.hint { color: var(--muted); font-size: 11.5px; margin: 6px 0 0; }
+
+.seg { display: flex; gap: 16px; margin-bottom: 10px; flex-wrap: wrap; }
+.seg label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.seg input { width: auto; }
+
+.totals {
+  position: sticky; bottom: 0; z-index: 2; display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 6px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin: 6px 0;
+}
+.totals span { display: block; font-size: 11px; color: var(--muted); }
+.totals b { font-variant-numeric: tabular-nums; }
+.totals .pos b { color: var(--ok); } .totals .neg b { color: var(--bad); }
+
+.actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.actions .hint { flex-basis: 100%; }
+.previews { display: flex; gap: 12px; flex-basis: 100%; }
+.previews a { color: var(--focus); font-weight: 600; }
+
+.toast {
+  position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 10; padding: 10px 12px; border-radius: 8px;
+  background: #1f2329; color: #fff; opacity: 0; transform: translateY(8px); transition: .2s; pointer-events: none;
+}
+.toast.show { opacity: 1; transform: none; }
+.toast.ok { background: var(--ok); } .toast.error { background: var(--bad); }
+
+/* off-screen holder used while turning a template into a PDF */
+.pdf-holder { position: fixed; left: -10000px; top: 0; background: #fff; }
